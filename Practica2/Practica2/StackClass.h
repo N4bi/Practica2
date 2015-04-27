@@ -1,103 +1,112 @@
-#ifndef __StackClass_H__
-#define __StackClass_H__
+#ifndef __stackClass_H__
+#define __stackClass_H__
 
-#include "p2Defs.h"
+#include <stdio.h>
 
-#define STACK_BLOCK_SIZE 32
 
-template<class VALUE>
+template<class typedata>
 class stackClass
 {
+
 private:
 
-	VALUE*			data;
-	unsigned int	mem_capacity;
-	unsigned int	num_elements;
+	typedata			*data;
+	unsigned int		allocated_memory;
+	unsigned int		num_elements;
+
 
 public:
 
 	//-- Constructors
-	stackClass() : mem_capacity(0), num_elements(0), data(NULL)
-	{
-		Alloc(STACK_BLOCK_SIZE);
-	}
 
-	stackClass(unsigned int capacity) : mem_capacity(0), num_elements(0), data(NULL)
+	stackClass() : data(NULL), allocated_memory(0), num_elements(0)
+	{}
+
+	stackClass(unsigned int new_memory) : data(NULL), num_elements(0)
 	{
-		Alloc(capacity);
+		reallocate(new_memory);
 	}
 
 	//-- Destructor
+
 	~stackClass()
 	{
-		delete[] data;
+		 delete[] data;
 	}
 
-	//-- Stack stuff
+	//-- Manage Stack
 
-	void push(const VALUE& element)
+	void push(const typedata &new_data)
 	{
-		if (num_elements >= mem_capacity)
-		{
-			Alloc(mem_capacity + STACK_BLOCK_SIZE);
-		}
-		data[num_elements++] = element;
+		if (num_elements == allocated_memory)
+			reallocate(++allocated_memory);
+
+		data[num_elements++] = new_data;
 	}
 
-	bool pop(VALUE& result)
+	typedata pop()
 	{
-		if (num_elements > 0)
+		if (num_elements >= 1)
 		{
-			result = data[--num_elements];
-			return true;
+			num_elements--;
+			return data[num_elements];
 		}
-		return false;
+		return NULL;
 	}
+
+	typedata peek()
+	{
+		if (num_elements >= 1)
+		{
+			return data[num_elements];
+		}
+		return NULL;
+	}
+	
 
 	void clear()
 	{
 		num_elements = 0;
 	}
 
-	const VALUE* Peek(unsigned int index)const
-	{
-		VALUE* result = NULL;
-
-		if (index < num_elements)
-			return result = &data[index];
-		return result;
-
-	}
-
 	//-- Utils
 
-	void Alloc(unsigned int mem)
+	unsigned int getElements() const
 	{
-		VALUE* tmp = data;
-		mem_capacity = mem;
-		data = new VALUE[mem_capacity];
-
-		num_elements = MIN(mem_capacity, num_elements);
-
-		if (tmp != NULL)
-		{
-			for (int i = 0; i < num_elements; i++)
-				data[i] = tmp[i];
-
-			delete[] tmp;
-		}
+		return num_elements;
 	}
 
 	unsigned int getCapacity() const
 	{
-		return mem_capacity;
+		return allocated_memory;
 	}
 
-	unsigned int getElements()const
+
+	//--Private utils
+
+
+private:
+
+	void reallocate(unsigned int new_memory)
 	{
-		return num_elements;
+		allocated_memory = new_memory;
+
+		if (data != NULL)
+		{
+			typedata *tmp = new typedata[allocated_memory];
+
+			for (unsigned int i = 0; i < num_elements; i++)
+				tmp[i] = data[i];
+
+			delete[] data;
+			data = tmp;
+		}
+		else
+		{
+			data = new typedata[allocated_memory];
+		}
 	}
+
 };
 
-
-#endif // !__StackClass_H__
+#endif // __stackClass_H__

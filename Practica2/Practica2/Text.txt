@@ -1,0 +1,12 @@
+													TREE FOR TEST
+													
+														 F
+													   /  \
+													  /	   \
+													 B	    G
+													/ \     | 
+												   A   D    H
+												      / \	|
+													 C   E	I
+													
+											 

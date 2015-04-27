@@ -1,46 +1,34 @@
-#ifndef __ListClass_H__
-#define __ListClass_H__
+#ifndef __listClass_H__
+#define __listClass_H__
+
 #include <stdio.h>
-#include "p2Defs.h"
 
-//--Items for double linked list
+template <class typedata>
+struct listItem {
+	typedata			data;
+	listItem<typedata> *next;
+	listItem<typedata> *prev;
 
-template<class typedata>
-struct listClass_item
-{
-
-	typedata					data;
-	listClass_item<typedata>*	next;
-	listClass_item<typedata>*	prev;
-
-	inline listClass_item(const typedata& _data)
+	inline listItem(const typedata &n_data)
 	{
-		data = _data;
-		prev = next = NULL;
+		data = n_data;
+		next = prev = NULL;
 	}
 
-	~listClass_item()
-	{}
+	~listItem()
+	{ }
 };
 
-//-- Double linked list
-
-template<class typedata>
-class listClass
-{
-
-public:
-
-	listClass_item<typedata>* start;
-	listClass_item<typedata>* end;
+template <class typedata>
+class listClass {
 
 private:
 
+	listItem<typedata>* start;
+	listItem<typedata>* end;
 	unsigned int size;
 
 public:
-
-	//-- Constructor
 
 	inline listClass()
 	{
@@ -48,139 +36,144 @@ public:
 		size = 0;
 	}
 
-	//-- Destructor
-
 	~listClass()
 	{
 		clear();
 	}
 
-	//-- Get size
-
-	unsigned int getSize()
+	unsigned int count() const
 	{
 		return size;
 	}
 
-	//-- Add item
-
-	unsigned int add(const typedata& item)
+	unsigned int add(const typedata &n_data)
 	{
-		listClass_item<typedata>*			p_data_item;
-		p_data_item = new listClass_item <typedata>(item);
+		listItem<typedata> *new_node;
+		new_node = new listItem<typedata>(n_data);
+		new_node->data = n_data;
 
-		if (start == NULL)
+		if (start != NULL)
 		{
-			start = end = p_data_item;
+			new_node->prev = end;
+			end->next = new_node;
+			end = new_node;
 		}
 		else
 		{
-			p_data_item->prev = end;
-			end->next = p_data_item;
-			end = p_data_item;
+			start = end = new_node;
 		}
+
 		return (++size);
+
 	}
 
-	//-- Delete item
-
-	bool del(listClass_item<typedata>* item)
+	listItem<typedata>* getNode(const int position) const
 	{
-		if (item == NULL)
+		listItem<typedata>* tmp = start;
+		for (int p = 0; p < position; p++)
 		{
-			return false;
-		}
-
-		if (item->prev != NULL)
-		{
-			item->prev->next = item->next;
-			if (item->next != NULL)
+			if (tmp == NULL)
 			{
-				item->next->prev = item->prev;
-			}
-			else
-			{
-				end = item->prev;
-			}
-		}
-		else
-		{
-			if (item->next)
-			{
-				item->next->prev = NULL;
-				start = item->next;
-			}
-			else
-			{
-				start = end = NULL;
-			}
-		}	
 
-		RELEASE(item);
-		size--;
-		return(true);
-		
-	}
-
-	//-- Delete all
-
-	void clear()
-	{
-		listClass_item<typedata>* p_data;
-		listClass_item<typedata>* p_next;
-		p_data = start;
-
-		while (p_data != NULL)
-		{
-			p_next = p_data->next;
-			RELEASE(p_data);
-			p_data = p_next;
-	
-		}
-		start = end = NULL;
-		size = 0;
-	}
-
-	//-- Read and write operator for position
-
-	typedata& operator [](const unsigned int index)
-	{
-		long	pos;
-		listClass_item<typedata>* p_item;
-		pos = 0;
-		p_item = start;
-
-		while (p_item != NULL)
-		{
-			if (pos == index)
-			{
+				return 0;
 				break;
 			}
-			pos++;
-			p_item = p_item->next;
-		}
-
-		return(p_item->data);
-	}
-	
-	//-- Return first data as index 
-	
-	int find(const typedata& data)
-	{
-		listClass_item<typedata>* tmp = start;
-		int index = 0;
-
-		while (tmp != NULL)
-		{
-			if (tmp->data == data)
-				return(index);
-			index++;
 			tmp = tmp->next;
 		}
-		return(-1);
+		return tmp;
+	}
+
+	bool at(unsigned int index, typedata &n_data) const
+	{
+		bool ret = false;
+		unsigned int i = 0;
+		listItem<typedata>*   searching_node = start;
+
+		for (unsigned int i = 0; i < index - 1 && searching_node != NULL; ++i)
+			searching_node = searching_node->next;
+
+		if (searching_node != NULL)
+		{
+			ret = true;
+			n_data = searching_node->data;
+		}
+
+		return ret;
+	}
+
+	bool del(listItem<typedata>* node)
+	{
+		if (start != NULL)
+		{
+			if (node->prev != NULL)
+			{
+				node->prev->next = node->next;
+				if (node->next != NULL)
+					node->next->prev = node->prev;
+				else
+					end = node->prev;
+			}
+			else
+			{
+				if (node->next != NULL)
+				{
+					start = node->next;
+					node->next->prev = NULL;
+				}
+				else
+					start = end = NULL;
+			}
+
+			delete node;
+			--size;
+			return true;
+		}
+		return false;
+	}
+
+	bool clear() {
+
+		if (start != NULL)
+		{
+			while (start->next != NULL)
+			{
+				listItem<typedata>* node = start;
+				start = start->next;
+				delete node;
+			}
+			start = end = NULL;
+			size = 0;
+			return true;
+		}
+		return false;
+	}
+
+	bool checkList(const listItem<typedata> *check_node) const
+	{
+		if (start != NULL && check_node != NULL)
+		{
+			listItem<typedata> *item = start;
+			while (item != NULL)
+			{
+				if (item->data == check_node->data)
+					return true;
+				item = item->next;
+			}
+		}
+		return false;
+	}
+
+	listItem<typedata>* getStart() const
+	{
+		return start;
+	}
+
+	listItem<typedata>* getEnd() const
+	{
+		return end;
 	}
 
 };
 
 
-#endif // __ListClass_H__
+#endif // !__listClass_H__

@@ -1,70 +1,68 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
-#include"..\Practica2\ListClass.h"
-#include"..\Practica2\StackClass.h"
+
+#include "../Practica2/StackClass.h"
+#include "../Practica2/TreeClass.h"
+#include "../Practica2/ListClass.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTest1
-{		
+{
 	TEST_CLASS(UnitTest1)
 	{
+
 	public:
-		//-- ListClass
 
-		TEST_METHOD(ListClassAdd)
+		//-- Stack Class
+
+		TEST_METHOD(StackConstructor)
 		{
-			listClass<int> mylist;
-			Assert::AreEqual((int)mylist.add(5), 1);
+			stackClass<int> stack;
+
+			stack.push(1);
+			stack.push(2);
+			stack.push(3);
+
+			int res;
+			Assert::IsTrue(stack.pop(res));
+			Assert::AreEqual(res, 3);
+			Assert::IsTrue(stack.pop(res));
+			Assert::AreEqual(res, 2);
+			Assert::IsTrue(stack.pop(res));
+			Assert::AreEqual(res, 1);
 		}
 
-		TEST_METHOD(ListClassDel)
+		TEST_METHOD(Tree_preOrderRecursive)
 		{
-			listClass<int> mylist;
-			mylist.add(5);
-			Assert::IsTrue(mylist.del(mylist.start));
-			Assert::AreEqual((int)mylist.getSize(), 0);
+			tree<char> myTree;
+			treeNode<char>* ptr;
+			treeNode<char>* ptr2;
+			ptr = myTree.add('F');
+			ptr2 = myTree.add('B', ptr);
+			ptr = myTree.add('G', ptr);
+			ptr = myTree.add('H', ptr);
+			myTree.add('I', ptr);
+			myTree.add('A', ptr2);
+			ptr2 = myTree.add('D', ptr2);
+			myTree.add('C', ptr2);
+			myTree.add('E', ptr2);
+
+			listClass<char> list;
+
+			myTree.preOrderRecursive(&list);
+
+			Assert::AreEqual(list.getNode(0)->data, 'F');
+			Assert::AreEqual(list.getNode(1)->data, 'B');
+			Assert::AreEqual(list.getNode(2)->data, 'A');
+			Assert::AreEqual(list.getNode(3)->data, 'D');
+			Assert::AreEqual(list.getNode(4)->data, 'C');
+			Assert::AreEqual(list.getNode(5)->data, 'E');
+			Assert::AreEqual(list.getNode(6)->data, 'G');
+			Assert::AreEqual(list.getNode(7)->data, 'H');
+			Assert::AreEqual(list.getNode(8)->data, 'I');
 		}
-
-		TEST_METHOD(ListClassClear)
-		{
-			listClass<int> mylist;
-			mylist.add(1); mylist.add(2); mylist.add(3);
-			mylist.clear();
-			Assert::AreEqual((int)mylist.getSize(), 0);
-		}
-
-		TEST_METHOD(ListClassOpBrk)
-		{
-			listClass<int> mylist;
-			mylist.add(5);
-			Assert::AreEqual(mylist[0], 5);
-		}
-
-		//-- StackClass
-
-		TEST_METHOD(Stack_test)
-		{
-			stackClass<int> lifo;
-
-			lifo.push(10);
-			lifo.push(20);
-			lifo.push(30);
-			lifo.push(40);
-
-			Assert::AreEqual((int)lifo.getElements(), 4);
-			Assert::AreEqual((int)*(lifo.Peek(1)), 20);
-
-			int result;
-			bool r = lifo.pop(result);
-
-			Assert::AreEqual((int)result, 40);
-			Assert::AreEqual((int)lifo.getElements(), 3);
-		}
-
-
-
-
-
 	};
 }
+
+	
