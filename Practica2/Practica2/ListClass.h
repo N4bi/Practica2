@@ -82,7 +82,7 @@ public:
 		}
 		return tmp;
 	}
-
+	/*
 	bool at(unsigned int index, typedata &n_data) const
 	{
 		bool ret = false;
@@ -100,7 +100,7 @@ public:
 
 		return ret;
 	}
-
+	*/
 	bool del(listItem<typedata>* node)
 	{
 		if (start != NULL)

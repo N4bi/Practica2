@@ -1,7 +1,11 @@
+#ifndef __TreeClass_H__
+#define __TreeClass_H__
 
-#include <stdlib.h>
+
 #include "ListClass.h"
 #include "StackClass.h"
+
+//-- Node tree
 
 template <class TYPE>
 class treeNode
@@ -72,10 +76,14 @@ private:
 
 public:
 
+	//-- Constructor
+
 	tree()
 	{
 		rootNode = NULL;
 	}
+
+	//-- Destructor
 
 	~tree()
 	{
@@ -107,26 +115,26 @@ public:
 		return nwNode;
 	}
 
-	void clear(treeNode<TYPE>* delnode = NULL)
+	void clear(treeNode<TYPE>* del_node = NULL)
 	{
-		if (delnode == NULL && rootNode != NULL)
+		if (del_node == NULL && rootNode != NULL)
 		{
-			delnode = rootNode;
+			del_node = rootNode;
 		}
-		if (delnode != NULL)
+		if (del_node != NULL)
 		{
-			if (delnode->child.getStart() != NULL)
+			if (del_node->child.getStart() != NULL)
 			{
-				int n_node = delnode->child.count();
+				int n_node = del_node->child.count();
 				for (int i = 0; i < n_node; i++)
 				{
-					clear(delnode->child.getNode(i)->data);
+					clear(del_node->child.getNode(i)->data);
 				
 				}
 			}
-			delete delnode;
+			delete del_node;
 		}
-		if (delnode == rootNode)
+		if (del_node == rootNode)
 		{
 			rootNode = NULL;
 		}
@@ -203,11 +211,10 @@ public:
 			{
 				Stack.push(node->child.getNode(j)->data);
 			}
-			while (Stack.peek() == Stack2.peek() && Stack.peek() != NULL)
+			while (Stack.peek() != NULL && Stack.peek() == Stack2.peek())
 			{
 				node = Stack.pop();
 				list->add(Stack2.pop()->data);
-	///////////
 			}
 			node = Stack.pop();
 
@@ -217,3 +224,5 @@ public:
 
 
 };
+
+#endif
