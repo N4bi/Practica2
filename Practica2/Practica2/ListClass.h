@@ -2,6 +2,8 @@
 #define __listClass_H__
 
 #include <stdio.h>
+#include <assert.h>
+#include "Utils.h"
 
 template <class typedata>
 struct listItem {
@@ -40,6 +42,106 @@ public:
 	{
 		clear();
 	}
+
+	typedata& operator[] (const unsigned int index)
+	{
+		listItem<typedata>* ptr = start;
+		for (int i = 0; n < index; i++)
+		{
+			if (i >= size){ assert(false); }
+			ptr = ptr->next;	
+		}
+		return ptr->data;	
+	}
+
+	typedata& operator[](const unsigned int index) const
+	{
+		listItem<typedata>* ptr = start;
+		for (int i = 0; n < index; i++)
+		{
+			if (i >= size){ assert(false); }
+			ptr = ptr->next;
+		}
+		return ptr->data;
+	}
+
+	int bubbleSort()
+	{
+		int counter = 0;
+		bool done = false;
+		listItem<typedata>* ptr = start;
+		listItem<typedata>* ptr2;
+
+		while (!done)
+		{
+			ptr = start;
+			done = true;
+			while ( ptr != NULL && ptr->next != NULL)
+			{
+				counter++;
+				ptr2 = ptr->next;
+				if (ptr->data > ptr2->data)
+				{
+					if (ptr != start)
+					{
+						ptr->prev->next = ptr2;
+					}
+					else
+					{
+						start = ptr2;
+					}
+					if (ptr2 != end)
+					{
+						ptr2->next->prev = ptr;
+					}
+					else
+					{
+						end = ptr;
+						ptr->next = ptr2->next;
+						ptr2->prev = ptr->prev;
+						ptr->prev = ptr2;
+						ptr2->next = ptr;
+						done = false;
+					}
+				}
+				else
+				{
+					ptr = ptr2;
+				}
+			}
+		}
+		printf(" bubbleSort \n %i\n", counter);
+		return counter;
+	}
+
+	int bubbleSortWithSwap()
+	{
+		int counter = 0;
+		bool swapped = true;
+
+		while (swapped)
+		{
+			swapped = false;
+			listItem<typedata>* ptr = start;
+
+			while (ptr != NULL && ptr->next != NULL)
+			{
+				++counter;
+				if (ptr->data > ptr->next->data)
+				{
+					swap(ptr->data, ptr->next->data);
+					swapped = true;
+				}
+
+				ptr = ptr->next;
+			}
+		}
+		printf("bubbleSort \n %i\n", counter);
+		return counter;
+	}
+
+
+
 
 	unsigned int count() const
 	{
@@ -82,25 +184,23 @@ public:
 		}
 		return tmp;
 	}
-	/*
-	bool at(unsigned int index, typedata &n_data) const
+
+	listItem<typedata>* getNode(const int position)
 	{
-		bool ret = false;
-		unsigned int i = 0;
-		listItem<typedata>*   searching_node = start;
-
-		for (unsigned int i = 0; i < index - 1 && searching_node != NULL; ++i)
-			searching_node = searching_node->next;
-
-		if (searching_node != NULL)
+		listItem<typedata>* tmp = start;
+		for (int p = 0; p < position; p++)
 		{
-			ret = true;
-			n_data = searching_node->data;
-		}
+			if (tmp == NULL)
+			{
 
-		return ret;
+				return 0;
+				break;
+			}
+			tmp = tmp->next;
+		}
+		return tmp;
 	}
-	*/
+
 	bool del(listItem<typedata>* node)
 	{
 		if (start != NULL)
@@ -161,6 +261,20 @@ public:
 			}
 		}
 		return false;
+	}
+
+	int find(const typedata& data)//(-1) if not found
+	{
+		listItem<typedata>* ptr = start;
+		int index = 0;
+		while (ptr != NULL)
+		{
+			if (ptr->data == data)
+				return index;
+			++index;
+			ptr = ptr->next;
+		}
+		return(-1);
 	}
 
 	listItem<typedata>* getStart() const
