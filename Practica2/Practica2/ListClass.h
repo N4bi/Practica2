@@ -6,7 +6,9 @@
 #include "Utils.h"
 
 template <class typedata>
+
 struct listItem {
+
 	typedata			data;
 	listItem<typedata> *next;
 	listItem<typedata> *prev;
@@ -16,6 +18,7 @@ struct listItem {
 		data = n_data;
 		next = prev = NULL;
 	}
+
 
 	~listItem()
 	{ }

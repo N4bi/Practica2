@@ -193,14 +193,14 @@ public:
 		}
 	}
 
-	void inOrderIterative(listClass<treeNode<TYPE>*>* list) const
+	void inOrderIterative(listClass<TYPE>* list) const
 	{
 		stackClass<treeNode<TYPE>*> Stack;
 		stackClass<treeNode<TYPE>*> Stack2;
 		treeNode<TYPE>* node = rootNode;
 		while (node != NULL)
 		{
-			int j = node->child.Count() - 1;
+			int j = node->child.count() - 1;
 			for (int i = j / 2; j >= i; j--)
 			{
 				Stack.push(node->child.getNode(j)->data);
@@ -220,6 +220,33 @@ public:
 
 		}
 	}
+
+	/*void witdhSearch(listClass<TYPE>* list) const 
+	{
+		stackClass<treeNode<TYPE>*> Stack;
+		stackClass<treeNode<TYPE>*> Stack2;
+		treeNode<TYPE>* node = rootNode;
+		Stack.push(node);
+
+		while (Stack.getElements() != 0)
+		{
+			Stack.pop(node);
+			list->add(node);
+
+			listItem<treeNode<TYPE>*>* item = node->child.getStart();
+			for (; item != NULL; item = item->next)
+				Stack2.push(item->data);
+
+			if (Stack.getElements() == 0)
+			{
+				while (Stack2.getElements() != 0)
+				{
+					Stack2.pop(node);
+					Stack.push(node);
+				}
+			}
+		}
+	}*/
 
 
 

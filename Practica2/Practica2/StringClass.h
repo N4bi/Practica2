@@ -27,19 +27,19 @@ public:
 
 	//-- Methods
 
-	void Alloc(int);
+	void alloc(int);
 
-	void Clear();
+	void clear();
 
-	unsigned int Len() const;
+	unsigned int len() const;
 
-	int Capacity() const;
+	int capacity() const;
 
-	const char* GetString() const;
+	const char* getString() const;
 
-	void Trim(bool trimStart = true, bool trimEnd = true, char toRemove = ' ');
+	void trim(bool trimStart = true, bool trimEnd = true, char toRemove = ' ');
 
-	int Replace(const char* toErase, const char* toInsert);
+	int replace(const char* toErase, const char* toInsert);
 
 	unsigned int find_char(char ch, int from_last);
 

@@ -66,6 +66,8 @@
   <ItemGroup>
     <ClInclude Include="DynArrayClass.h" />
     <ClInclude Include="ListClass.h" />
+    <ClInclude Include="Log.h" />
+    <ClInclude Include="Point2D.h" />
     <ClInclude Include="QueueClass.h" />
     <ClInclude Include="StackClass.h" />
     <ClInclude Include="StringClass.h" />
@@ -73,7 +75,9 @@
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Point2D.cpp" />
     <ClCompile Include="StringClass.cpp" />
   </ItemGroup>
   <ItemGroup>

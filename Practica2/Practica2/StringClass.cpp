@@ -6,14 +6,14 @@
 
 stringClass::stringClass()
 {
-	Alloc(1);
+	alloc(1);
 	strcpy_s(string, size, "");
 }
 
 stringClass::stringClass(const stringClass& nwString)
 {
-	Alloc(nwString.Len() + 1);
-	strcpy_s(string, size, nwString.GetString());
+	alloc(nwString.len() + 1);
+	strcpy_s(string, size, nwString.getString());
 }
 
 stringClass::stringClass(const char* format, ...)
@@ -31,14 +31,14 @@ stringClass::stringClass(const char* format, ...)
 
 		if (res > 0)
 		{
-			Alloc(res + 1);
+			alloc(res + 1);
 			strcpy_s(string, size, tmp);
 		}
 	}
 	if (size == 0)
 	{
-		Alloc(1);
-		Clear();
+		alloc(1);
+		clear();
 	}
 }
 
@@ -54,42 +54,42 @@ stringClass::~stringClass()
 
 //-- Methods
 
-void stringClass::Alloc(int nwSize)
+void stringClass::alloc(int nwSize)
 {
 	size = nwSize;
 	string = new char[size];
 }
 
-void stringClass::Clear()
+void stringClass::clear()
 {
 	if (string != NULL)
 	{
 		delete[] string;
-		Alloc(1);
+		alloc(1);
 		strcpy_s(string, size, "");
 	}
 }
 
-unsigned int stringClass::Len() const
+unsigned int stringClass::len() const
 {
 	return strlen(string);
 }
 
-int stringClass::Capacity() const
+int stringClass::capacity() const
 {
 	return size;
 }
 
-const char* stringClass::GetString() const
+const char* stringClass::getString() const
 {
 	return string;
 }
 
-void stringClass::Trim(bool trimStart, bool trimEnd, char toRemove)
+void stringClass::trim(bool trimStart, bool trimEnd, char toRemove)
 {
 	int n = 0;
-	int m = Len();
-	while (string[n] == toRemove && n < Len() && trimStart == true)
+	int m = len();
+	while (string[n] == toRemove && n < len() && trimStart == true)
 	{
 		n++;
 	}
@@ -105,32 +105,30 @@ void stringClass::Trim(bool trimStart, bool trimEnd, char toRemove)
 }
 
 
-int  stringClass::Replace(const char* toErase, const char* toInsert)
+int  stringClass::replace(const char* toErase, const char* toInsert)
 {
-	int nOfReplacements = 0;
+	int nOfreplacements = 0;
 	if (toErase != NULL)
 	{
 		int sizeDifference = 0;
-		int toEraseLen = strlen(toErase);
-		int toInsertLen = strlen(toInsert);
-		//Getting how much we'll have to move the characters after the substitution
-		sizeDifference = toEraseLen - toInsertLen;
+		int toEraselen = strlen(toErase);
+		int toInsertlen = strlen(toInsert);
+		
+		sizeDifference = toEraselen - toInsertlen;
 
 		for (int n = 0; n < strlen(string); n++)
 		{
 			int counter = 0;
-			//Comparing our string to the characters to substitute
-			for (int m = 0; m < toEraseLen && string[n + m] == toErase[m]; m++)
+			for (int m = 0; m < toEraselen && string[n + m] == toErase[m]; m++)
 			{
 				counter++;
 			}
 
-			//Moving the characters following our replacement
-			if (counter >= toEraseLen)
+			if (counter >= toEraselen)
 			{
 				if (sizeDifference > 0)
 				{
-					for (int m = toInsertLen; m + n + sizeDifference <= strlen(string); m++)
+					for (int m = toInsertlen; m + n + sizeDifference <= strlen(string); m++)
 					{
 						string[m + n] = string[m + n + sizeDifference];
 					}
@@ -140,25 +138,24 @@ int  stringClass::Replace(const char* toErase, const char* toInsert)
 					if (strlen(string) - sizeDifference >= size)
 					{
 						stringClass tmp(*this);
-						Alloc(size - sizeDifference + 1);
+						alloc(size - sizeDifference + 1);
 						strcpy_s(string, tmp.size, tmp.string);
 					}
-					for (int m = strlen(string); m >= n + toEraseLen; m--)
+					for (int m = strlen(string); m >= n + toEraselen; m--)
 					{
 						string[m - sizeDifference] = string[m];
 					}
 				}
-				//Replacing the word
-				for (int m = 0; m < toInsertLen; m++)
+				for (int m = 0; m < toInsertlen; m++)
 				{
 					string[m + n] = toInsert[m];
 				}
-				nOfReplacements++;
-				n += toInsertLen;
+				nOfreplacements++;
+				n += toInsertlen;
 			}
 		}
 	}
-	return nOfReplacements;
+	return nOfreplacements;
 }
 
 unsigned int stringClass::find_char(char ch, int from_last)
@@ -232,13 +229,13 @@ stringClass stringClass::operator= (const char* str)
 		if (strlen(str) + 1 > size)
 		{
 			delete[] string;
-			Alloc(strlen(str) + 1);
+			alloc(strlen(str) + 1);
 		}
 		strcpy_s(string, size, str);
 	}
 	else
 	{
-		Clear();
+		clear();
 	}
 	return(*this);
 }
@@ -247,16 +244,16 @@ stringClass stringClass::operator= (const stringClass& str)
 {
 	if (str.string != NULL)
 	{
-		if (str.Len() + 1 > size)
+		if (str.len() + 1 > size)
 		{
 			delete[] string;
-			Alloc(str.Len() + 1);
+			alloc(str.len() + 1);
 		}
 		strcpy_s(string, size, str.string);
 	}
 	else
 	{
-		Clear();
+		clear();
 	}
 
 	return(*this);
@@ -268,7 +265,7 @@ const stringClass stringClass::operator+= (const char* str)
 	{
 		stringClass tmp(*this);
 		delete[] string;
-		Alloc(strlen(str) + size);
+		alloc(strlen(str) + size);
 		strcpy_s(string, tmp.size, tmp.string);
 		strcat_s(string, size, str);
 	}
@@ -281,7 +278,7 @@ const stringClass stringClass::operator+= (const stringClass& str)
 	{
 		stringClass tmp(*this);
 		delete[] string;
-		Alloc(strlen(str.string) + size);
+		alloc(strlen(str.string) + size);
 		strcpy_s(string, tmp.size, tmp.string);
 		strcat_s(string, size, str.string);
 	}

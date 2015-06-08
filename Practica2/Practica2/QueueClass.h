@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include "Utils.h"
+#include "DynArrayClass.h"
 
 #define QUEUE_BLOCK_SIZE 16
 
@@ -107,6 +108,52 @@ public:
 		}
 
 		return result;
+	}
+
+};
+
+template<class typedata>
+class queueDynArray
+{
+
+public:
+
+	int left_index = 0;
+	dynArrayClass<typedata> data;
+
+	int count() const
+	{
+		return data.count() - left_index;
+	}
+
+	void push(const typedata& item)
+	{
+		data.push(item);
+	}
+
+	bool pop(typedata& item)
+	{
+		if (left_index < data.count())
+		{
+			item = data[left_index++];
+			return true;
+		}
+		return false;
+	}
+
+	const typedata* peek(int index) const
+	{
+		index += left_index;
+		if (index < data.count())
+		{
+			return &data[index];
+			return NULL;
+		}
+	}
+
+	void clear()
+	{
+		data.clear();
 	}
 
 };

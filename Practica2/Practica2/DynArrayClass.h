@@ -5,6 +5,8 @@
 #include <assert.h>
 
 #include "Utils.h"
+#include"Log.h"
+
 #define DYNARRAY_BLOCK_SIZE 16
 
 template <class typedata>
@@ -17,13 +19,19 @@ private:
 	
 
 public:
-	dynArrayClass(){ data = NULL; numElements = 0; allocatedMemory = 0; }
+	dynArrayClass() : allocatedMemory(0), numElements(0), data(NULL)
+	{
+		reallocate(DYNARRAY_BLOCK_SIZE);
+	}
 
-	dynArrayClass(const int MemorySize) { data = new typedata[MemorySize]; allocatedMemory = MemorySize; numElements = 0; }
+	dynArrayClass(const int MemorySize) : allocatedMemory(0), numElements(0), data(NULL)
+	{
+		reallocate(MemorySize);
+	}
 
 	~dynArrayClass()
 	{
-		if (data != NULL) { delete data; }
+		if (data != NULL) { delete[] data; }
 	}
 
 	const unsigned int getCapacity() const
@@ -48,39 +56,39 @@ public:
 
 	void reallocate(const int nwSize)
 	{
-		typedata* nwData = new typedata[nwSize];
+		typedata* tmp = data;
 		allocatedMemory = nwSize;
-		if (data != NULL)
-		{
-			for (int n = 0; n <= MIN(newSize, numElements); n++)
-			{
-				nwData[n] = data[n];
-			}
+		data = new typedata[allocatedMemory];
 
-			delete data;
+		numElements = MIN(allocatedMemory, numElements);
+
+		if (tmp != NULL)
+		{
+			for (int i = 0; i < numElements; ++i)
+				data[i] = tmp[i];
+			delete[] tmp;
 		}
-		data = nwData;
-		numElements = MIN(nwSize, numElements);
+
 	}
 
-	void push(const typedata value)
+	void push(const typedata& value)
 	{
-		if (numElements + 1 > allocatedMemory)
+		if (numElements >= allocatedMemory)
 		{
 			reallocate(allocatedMemory + DYNARRAY_BLOCK_SIZE);
 		}
-		data[numElements] = value;
-		numElements++;
+		data[numElements++] = value;
+
 	}
 
-	typedata pop()
+	bool pop(typedata& value)
 	{
-		if (numElements >= 1)
+		if (numElements > 0)
 		{
-			numElements--;
-			return data[numElements];
+			value = data[--numElements];
+			return true
 		}
-		return 0;
+		return false;
 
 	}
 
@@ -89,26 +97,35 @@ public:
 		numElements = 0;
 	}
 
-	void insert(const typedata value, const int pos)
+	bool insert(int new_value, unsigned int position)
 	{
-		if (pos < allocatedMemory)
+		if (position <= numElements)
 		{
-			if (numElements + 1 > allocatedMemory)
+			TYPE *tmp = new TYPE[allocatedMemory];
+			for (unsigned int i = 0; i < numElements; i++)
 			{
+				tmp[i] = data[i];
+			}
+
+			if (numElements == allocatedMemory)
 				reallocate(allocatedMemory + 1);
-			}
-			for (int n = numElements; n > pos; n--)
+
+			for (unsigned int i = 0; i < position; i++)
 			{
-				data[n] = data[n - 1];
+				data[i] = tmp[i];
 			}
-			data[pos] = value;
+			data[position] = new_value;
+			for (unsigned int i = position; i < numElements; i++)
+			{
+				data[i + 1] = tmp[i];
+			}
 			numElements++;
+			delete[] tmp;
+			return true;
 		}
-		else
-		{
-			LOG("\n\nSe intentó insertar un valor fuera de la memoria en un DynArray\n\n");
-		}
+		return false;
 	}
+
 
 	void mirror()
 	{
@@ -206,7 +223,7 @@ public:
 		printf(" BubbleSort \n %i\n", counter);
 	}
 
-	void bubbleSortOptimized()
+	typedata bubbleSortOptimized()
 	{
 		int retrn = 0;
 		int count;
@@ -218,15 +235,35 @@ public:
 			last = 0;
 			for (int i = 0; i < count; i++)
 			{
-				++retrn;
+				retrn++;
 				if (data[i] > data[i + 1])
 				{
 					swap(data[i], data[i + 1]);
 					last = i;
 				}
-			}
+			}	
 		}
 		return retrn;
+	}
+
+	int bubbleSortSuperOptimized()
+	{
+		int counter = 0;
+		int last = numElements;
+
+		for (int i = 0; i < last - 1; i++)
+		{
+			for (int j = i + 1; j < last; j++)
+			{
+				counter++;
+				if (data[i]>data[j])
+				{
+					swap(data[i], data[j]);
+					last = j;
+				}
+			}
+		}
+		return counter;
 	}
 
 	void flip()
